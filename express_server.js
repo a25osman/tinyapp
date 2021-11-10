@@ -9,10 +9,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-function generateRandomString() {
-
-}
-
+const generateRandomString = require("./genRandString")
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
