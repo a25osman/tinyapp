@@ -17,6 +17,15 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+// CRUD actions start below
+//------------------------------------------------
+
+// Create registration form
+app.get("/register", (req, res) => {
+  // const templateVars;
+  res.render("register");
+});
+
 // Logout
 app.post("/logout", (req, res) => {
   res.clearCookie("username")
