@@ -8,8 +8,9 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <title>TinyApp</title>
 </head>
-<%- include('partials/_header') %>
+
 <body>
+  <%- include('partials/_header') %>
   <main style="margin: 1em;">
     <h3>My URLs</h3>
     <table class="table">
@@ -26,6 +27,7 @@
           <tr>
             <td><%= url %></td>
             <td><%= urls[url] %></td>
+            <!-- creating edit and delete buttons below -->
             <td>
               <form method="get" action="/urls/<%= url %>">
                 <button style="border: 1px solid blue;   color: blue;   background-color:transparent;" 
@@ -38,6 +40,7 @@
                 type="submit">Delete!</button>
               </form>
             </td>
+            <!-- End -->
           </tr>
         <% } %>
       </tbody>
