@@ -26,4 +26,14 @@ const checkEmail = function (users, email){ //users is object with user objects
   return [check, name, pass, id];
 }
 
-module.exports = {generateRandomString, checkEmail};
+const myURL = function (users, id) {
+  let obj = {};
+  for (let key in users) {
+    if (users[key].userID === id) {
+      obj[key] = users[key];
+    }
+  }
+  return obj;
+}
+
+module.exports = {generateRandomString, checkEmail, myURL};

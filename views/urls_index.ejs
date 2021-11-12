@@ -13,38 +13,43 @@
   <%- include('partials/_header') %>
   <main style="margin: 1em;">
     <h3>My URLs</h3>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Short URL</th>
-          <th scope="col">Long URL</th>
-          <th scope="col">Edit</th>
-          <th scope="col">Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for(let url in urls) { %>
+    <% if (user) { %>
+      <table class="table">
+        <thead>
           <tr>
-            <td><%= url %></td>
-            <td><%= urls[url] %></td>
-            <!-- creating edit and delete buttons below -->
-            <td>
-              <form method="get" action="/urls/<%= url %>">
-                <button style="border: 1px solid blue;   color: blue;   background-color:transparent;" 
-                type="submit">Edit!</button>
-              </form>
-            </td>
-            <td>
-              <form method="POST" action="/urls/<%= url %>/delete">
-                <button style="border: 1px solid red;   color: crimson;   background-color:transparent;" 
-                type="submit">Delete!</button>
-              </form>
-            </td>
-            <!-- End -->
+            <th scope="col">Short URL</th>
+            <th scope="col">Long URL</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
           </tr>
-        <% } %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% for(let url in urls) { %>
+            <tr>
+              <td><%= url %></td>
+              <td><%= urls[url].longURL %></td>
+              <!-- creating edit and delete buttons below -->
+              <td>
+                <form method="get" action="/urls/<%= url %>">
+                  <button style="border: 1px solid blue;   color: blue;   background-color:transparent;" 
+                  type="submit">Edit!</button>
+                </form>
+              </td>
+              <td>
+                <form method="POST" action="/urls/<%= url %>/delete">
+                  <button style="border: 1px solid red;   color: crimson;   background-color:transparent;" 
+                  type="submit">Delete!</button>
+                </form>
+              </td>
+              <!-- End -->
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    <% } %>
+    <% if (!user) { %>
+      <h4>Please login or create an account to view your URLs!</h4>
+    <% } %>
   </main>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
