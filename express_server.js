@@ -1,4 +1,4 @@
-const generateRandomString = require("./genRandString")
+const {generateRandomString, checkEmail} = require("./helperFunctions")
 
 const express = require("express");
 const app = express();
@@ -17,25 +17,77 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
+
 // CRUD actions start below
 //------------------------------------------------
 
+// Create login page
+app.get("/login", (req, res) => {
+  const templateVars = {user : null};
+  // if (req.cookies.userid) {
+  //     templateVars.user = users[req.cookies.userid]
+  // };
+  res.render("login", templateVars);
+});
+
+
+// Store registration form data with error implementation
+app.post("/register", (req, res) => {
+  
+  const id = `user${generateRandomString()}`;
+  const email = req.body.email;
+  const password = req.body.password;
+  
+  if (checkEmail(users, email)) {
+    res.status(400).send(`Invalid email. "${email}" is already is use.`);
+    console.log("email:   ",email)
+    console.log("email already exists?", checkEmail(users, email))
+    console.log("user object\n", users)
+    return;
+  } 
+  
+  if (email && password) {
+    const user = {id, email, password};
+    users[id] = user;
+    res.cookie("userid", id);
+    res.redirect("/urls");
+    return;
+  }
+
+  res.status(400).send(`Please enter a valid email`);
+});
+
 // Create registration form
 app.get("/register", (req, res) => {
-  // const templateVars;
-  res.render("register");
+  const templateVars = {user : null};
+  // if (req.cookies.userid) {
+  //     templateVars.user = users[req.cookies.userid]
+  // };
+  res.render("register", templateVars);
 });
 
 // Logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("username")
+  res.clearCookie("user_id")
   res.redirect(`/urls`); 
 });
 
 // Login 
 app.post("/login", (req, res) => {
-  const username = req.body.username;
-  res.cookie("username", username);
+  const email = req.body.email;
+  res.cookie("email", email);
   res.redirect(`/urls`); 
 });
 
@@ -65,20 +117,30 @@ app.post("/urls/:shortURL", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = { 
     urls: urlDatabase, 
-    username: req.cookies["username"] 
+    // username: req.cookies["username"] 
+    user: users[req.cookies.userid]
   };
   res.render("urls_index", templateVars);
 });
 
 // Render "create a url" page
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = { 
+    // username: req.cookies["username"] 
+    user: users[req.cookies.userid]
+  };
+  res.render("urls_new", templateVars);
 });
 
 // Render edit page as well as short url page e.g /urls/a45kg24!@ 
 app.get("/urls/:shortURL", (req, res) => {
   const id = req.params.shortURL
-  const templateVars = { shortURL: id, longURL: urlDatabase[req.params.shortURL], id};
+  const templateVars = {
+    shortURL: id, 
+    longURL: urlDatabase[req.params.shortURL], 
+    // username: req.cookies["username"]
+    user: users[req.cookies.userid]
+  };
   res.render("urls_show", templateVars);
 });
 
