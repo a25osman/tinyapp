@@ -11,14 +11,16 @@
       </div>
     </div>
 <!-- ------- -->
-    <!-- Creating login button link -->
-    <a class="navbar-brand" href="/login">Login</a>
-    <!-- end -->
+    <% if (!user) { %>
+      <!-- Creating login button link -->
+      <a class="navbar-brand" href="/login">Login</a>
+      <!-- end -->
 
-    <!-- Creating register button link -->
-    <a class="navbar-brand" href="/register">Register</a>
-    <!-- end -->
-    
+      <!-- Creating register button link -->
+      <a class="navbar-brand" href="/register">Register</a>
+      <!-- end -->
+    <% } %> 
+
     <!-- Creating logout field and button -->
     <% if (user) { %>
       <form action="/logout" method="POST">

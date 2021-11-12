@@ -36,9 +36,6 @@ const users = {
 // Create login page
 app.get("/login", (req, res) => {
   const templateVars = {user : null};
-  // if (req.cookies.userid) {
-  //     templateVars.user = users[req.cookies.userid]
-  // };
   res.render("login", templateVars);
 });
 
@@ -50,11 +47,8 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   
-  if (checkEmail(users, email)) {
+  if (checkEmail(users, email)[0]) {
     res.status(400).send(`Invalid email. "${email}" is already is use.`);
-    console.log("email:   ",email)
-    console.log("email already exists?", checkEmail(users, email))
-    console.log("user object\n", users)
     return;
   } 
   
@@ -80,15 +74,21 @@ app.get("/register", (req, res) => {
 
 // Logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id")
+  res.clearCookie("userid")
   res.redirect(`/urls`); 
 });
 
 // Login 
 app.post("/login", (req, res) => {
   const email = req.body.email;
-  res.cookie("email", email);
-  res.redirect(`/urls`); 
+  const password = req.body.password
+  if (checkEmail(users, email)[0] && checkEmail(users, email)[2] === password) {
+    const id = (checkEmail(users, email)[3])
+    res.cookie("userid", id);
+    res.redirect(`/urls`);
+    return;
+  }
+  res.status(403).send(`Email or password cannot be found`);
 });
 
 // Create New Url
@@ -117,7 +117,6 @@ app.post("/urls/:shortURL", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = { 
     urls: urlDatabase, 
-    // username: req.cookies["username"] 
     user: users[req.cookies.userid]
   };
   res.render("urls_index", templateVars);
@@ -126,7 +125,6 @@ app.get("/urls", (req, res) => {
 // Render "create a url" page
 app.get("/urls/new", (req, res) => {
   const templateVars = { 
-    // username: req.cookies["username"] 
     user: users[req.cookies.userid]
   };
   res.render("urls_new", templateVars);
@@ -138,7 +136,6 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL: id, 
     longURL: urlDatabase[req.params.shortURL], 
-    // username: req.cookies["username"]
     user: users[req.cookies.userid]
   };
   res.render("urls_show", templateVars);

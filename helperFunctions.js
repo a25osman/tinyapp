@@ -12,12 +12,18 @@ const generateRandomString = function () {
 const checkEmail = function (users, email){ //users is object with user objects
   let users_array = Object.values(users) //users_array is array with user objects
   let check = false;
+  let name = "";
+  let pass = "";
+  let id = "";
   for (let obj of users_array) {
     if (obj["email"] == email) {
       check = true;
+      name = obj["email"];
+      pass = obj["password"]
+      id = obj["id"];
     }
   }
-  return check;
+  return [check, name, pass, id];
 }
 
 module.exports = {generateRandomString, checkEmail};
