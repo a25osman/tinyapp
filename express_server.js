@@ -117,6 +117,7 @@ app.post("/urls", (req, res) => {
 // Delete a url
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
+  if (req.cookies.userid && .....)
   delete urlDatabase[shortURL];
   res.redirect(`/urls`);
 });

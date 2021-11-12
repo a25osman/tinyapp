@@ -36,4 +36,8 @@ const myURL = function (users, id) {
   return obj;
 }
 
+const getID = function (users, shortUrl) {
+  let 
+}
+
 module.exports = {generateRandomString, checkEmail, myURL};
