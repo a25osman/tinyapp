@@ -24,7 +24,7 @@ const urlDatabase = {
   },
   i3BoGr: {
       longURL: "https://www.google.ca",
-      userID: "aJ48lW"
+      userID: "user2RandomID"
   }
 };
 
@@ -107,7 +107,7 @@ app.post("/urls", (req, res) => {
   if (req.cookies.userid){
     console.log(req.body);  // Log the POST request body to the console
     const code = generateRandomString()
-    urlDatabase[code] = {longURL: req.body.longURL, userID: req.cookies.userID}
+    urlDatabase[code] = {longURL: req.body.longURL, userID: req.cookies.userid}
     res.redirect(`/urls/${code}`);  
     return;  
   }
@@ -117,22 +117,40 @@ app.post("/urls", (req, res) => {
 // Delete a url
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
-  if (req.cookies.userid && .....)
-  delete urlDatabase[shortURL];
-  res.redirect(`/urls`);
+  if (!urlDatabase[shortURL]) {
+    res.status(404).send("Error: The url you have attempted to delete does not exist.\n");
+    return;
+  }
+  if (req.cookies.userid === urlDatabase[shortURL].userID) {
+    delete urlDatabase[shortURL];
+    res.redirect(`/urls`);
+    return;
+  }
+  if (req.cookies.userid) {
+    res.status(403).send("Error: You can only delete URLs which belong to your account.\n");
+    return;
+  }  
+  res.status(403).send("Error: You do not have premission to delete this page. Please login first.\n");
 });
 
 // Edit a long url
 app.post("/urls/:shortURL", (req, res) => {
-  if (req.cookies.userid){
-    const shorturl = req.params.shortURL;
-    urlDatabase[shorturl] = {longURL: req.body.longURL, userID: req.cookies.userid};
+  const shortURL = req.params.shortURL;
+  if (!urlDatabase[shortURL]) {
+    res.status(404).send("Error: The url you have attempted to edit does not exist.\n");
+    return;
+  }
+  if (req.cookies.userid === urlDatabase[shortURL].userID){
+    urlDatabase[shortURL] = {longURL: req.body.longURL, userID: req.cookies.userid};
     res.redirect(`/urls`);
     console.log(urlDatabase)
     return;
   }
-  res.redirect(`/urls`);
-  console.log("redirected to homepage")
+  if (req.cookies.userid) {
+    res.status(403).send("Error: You can only edit URLs which belong to your account.\n");
+    return;
+  }  
+  res.status(403).send("Error: You do not have premission to edit this URL. Please login first.\n");
 });
 
 // Render URL main page
@@ -162,7 +180,11 @@ app.get("/urls/new", (req, res) => {
 
 // Render edit page as well as short url page e.g /urls/a45kg24!@ 
 app.get("/urls/:shortURL", (req, res) => {
-  const id = req.params.shortURL  
+  const id = req.params.shortURL
+  if (!urlDatabase[id]) {
+    res.status(404).send("Error: The url page you have attempted to access does not exist.\n");
+    return;
+  }
   const templateVars = {
     shortURL: id, 
     longURL: urlDatabase[req.params.shortURL].longURL, 
@@ -174,8 +196,8 @@ app.get("/urls/:shortURL", (req, res) => {
 // redirect to actual web page
 app.get("/u/:shortURL", (req, res) => {
   if (!urlDatabase[req.params.shortURL]){
-    res.send("The short url you have attempted to use does not exist")
-    return;
+    res.status(404).send("The short url you have attempted to access does not exist")
+    return; //i can move this block render edit page above but questions asks for this block
   }
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
