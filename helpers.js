@@ -12,9 +12,9 @@ const generateRandomString = function () {
 const checkEmail = function (users, email){ //users is object with user objects
   let users_array = Object.values(users) //users_array is array with user objects
   let check = false;
-  let name = "";
-  let pass = "";
-  let id = "";
+  let name = undefined;
+  let pass = undefined;
+  let id = undefined;
   for (let obj of users_array) {
     if (obj["email"] == email) {
       check = true;

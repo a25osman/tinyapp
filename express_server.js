@@ -1,4 +1,4 @@
-const {generateRandomString, checkEmail, myURL} = require("./helperFunctions")
+const {generateRandomString, checkEmail, myURL} = require("./helpers")
 
 const express = require("express");
 const app = express();
@@ -31,16 +31,16 @@ const urlDatabase = {
   }
 };
 
-const users = { 
-  "aJ48lW": {
-    id: "aJ48lW", 
+const users = {
+  "userRandomID": {
+    id: "userRandomID", 
     email: "user@example.com", 
-    password: "123"
+    password: "purple-monkey-dinosaur"
   },
- "user2RandomID": {
+  "user2RandomID": {
     id: "user2RandomID", 
     email: "user2@example.com", 
-    password: "123"
+    password: "dishwasher-funk"
   }
 }
 
