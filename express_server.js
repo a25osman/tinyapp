@@ -1,25 +1,24 @@
 const {generateRandomString, checkEmail, myURL} = require("./helpers")
 
-const express = require("express");
-const app = express();
 const PORT = 8080; // default port 8080
 
-app.set("view engine", "ejs");
-
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
-
-
+const express = require("express");
+const bcrypt = require('bcryptjs');
 const cookieSession = require('cookie-session')
+const bodyParser = require("body-parser");
+
+const app = express();
+
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2']
 }))
 
-const bcrypt = require('bcryptjs');
+app.set("view engine", "ejs");
+
 
 // initial database
-
 const urlDatabase = {
   b6UTxQ: {
       longURL: "https://www.tsn.ca",
@@ -71,7 +70,6 @@ app.post("/register", (req, res) => {
   if (email && hashedPassword) {
     const user = {id, email, password: hashedPassword};
     users[id] = user;
-    // res.cookie("userid", id);
     req.session.userid = id;
     res.redirect("/urls");
     return;
@@ -99,7 +97,6 @@ app.post("/login", (req, res) => {
 
   if (checkEmail(users, email)[0] && bcrypt.compareSync( req.body.password, storedPassword)) {
     const id = (checkEmail(users, email)[3])
-    // res.cookie("userid", id);
     req.session.userid = id;
     res.redirect(`/urls`);
     return;
@@ -166,7 +163,6 @@ app.get("/urls", (req, res) => {
     };
   }
   res.render("urls_index", templateVars);
-  // res.send("Please log in or create an account to view URLs")
 
 });
 
@@ -200,7 +196,7 @@ app.get("/urls/:shortURL", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   if (!urlDatabase[req.params.shortURL]){
     res.status(404).send("The short url you have attempted to access does not exist")
-    return; //i can move this block render edit page above but questions asks for this block
+    return;
   }
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
