@@ -12,6 +12,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
+const bcrypt = require('bcryptjs');
+
 // const urlDatabase = {
 //   "b2xVn2": "http://www.lighthouselabs.ca",
 //   "9sm5xK": "http://www.google.com"
@@ -57,14 +59,16 @@ app.post("/register", (req, res) => {
   const id = `user${generateRandomString()}`;
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
   
   if (checkEmail(users, email)[0]) {
     res.status(400).send(`Invalid email. "${email}" is already is use.`);
     return;
   } 
   
-  if (email && password) {
-    const user = {id, email, password};
+  if (email && hashedPassword) {
+    const user = {id, email, password: hashedPassword};
     users[id] = user;
     res.cookie("userid", id);
     res.redirect("/urls");
@@ -77,9 +81,6 @@ app.post("/register", (req, res) => {
 // Create registration form
 app.get("/register", (req, res) => {
   const templateVars = {user : null};
-  // if (req.cookies.userid) {
-  //     templateVars.user = users[req.cookies.userid]
-  // };
   res.render("register", templateVars);
 });
 
@@ -92,13 +93,18 @@ app.post("/logout", (req, res) => {
 // Login 
 app.post("/login", (req, res) => {
   const email = req.body.email;
-  const password = req.body.password
-  if (checkEmail(users, email)[0] && checkEmail(users, email)[2] === password) {
+  const storedPassword = checkEmail(users, email)[2];
+
+  if (checkEmail(users, email)[0] && bcrypt.compareSync( req.body.password, storedPassword)) {
     const id = (checkEmail(users, email)[3])
     res.cookie("userid", id);
     res.redirect(`/urls`);
+    console.log(users)
     return;
   }
+  console.log("----------","users:",users,'\n',"\n")
+  console.log("user object show password:", checkEmail(users, email)[2])
+  console.log("bcrypt.compareSync returns:", bcrypt.compareSync(checkEmail(users, email)[2], req.body.password))
   res.status(403).send(`Email or password cannot be found`);
 });
 
